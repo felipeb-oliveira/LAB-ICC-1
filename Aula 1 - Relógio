@@ -8,7 +8,7 @@ int main()
     segundos = minutos = segundos = 0;
     while(1)
     {
-        printf("%d : %d : %d", segundos, minutos, horas);
+        printf("%2d : %2d : %2d", segundos, minutos, horas);
         sleep(1000);
         segundos = segundos + 1;
         if (segundos > 59)
