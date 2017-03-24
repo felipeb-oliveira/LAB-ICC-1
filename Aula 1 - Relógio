@@ -2,30 +2,28 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 int main()
 {
     int segundos, minutos, horas;
-    segundos = minutos = segundos = 0;
-    while(1)
-    {
-        printf("%2d : %2d : %2d", segundos, minutos, horas);
+    segundos = minutos = horas = 0;
+while(1)
+{
+        printf(\r  "%2d %2d %2d", segundos, minutos, horas);
         sleep(1000);
-        segundos = segundos + 1;
-        if (segundos > 59)
+        segundos++;
+        if (segundos == 60)
         {
-            segundos = 0;
-            minutos = minutos + 1;
+            segundos=0;
+            minutos++;
         }
-        if (minutos > 50)
+        if (minutos==60)
         {
-            minutos = 0;
-            horas = horas + 1 
-        }
-        if (horas > 23)
+            minutos=0;
+            horas++
+        if (horas==24)
         {
-            horas = 0
+            horas=0
         }
-    }
+}
     return 0;
 }
