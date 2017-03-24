@@ -9,7 +9,7 @@ int main()
 while(1)
 {
         printf(\r  "%2d %2d %2d", segundos, minutos, horas);
-        sleep(1000);
+        sleep(1);
         segundos++;
         if (segundos == 60)
         {
@@ -19,10 +19,11 @@ while(1)
         if (minutos==60)
         {
             minutos=0;
-            horas++
+            horas++;
+        }
         if (horas==24)
         {
-            horas=0
+            horas=0;
         }
 }
     return 0;
