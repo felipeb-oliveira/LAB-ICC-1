@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 int main()
 {
-    int segundos, minutos, horas;
-    segundos = minutos = horas = 0;
-while(1)
-{
-        printf("\r  %2.0dh%2.0dm:%2.0ds",horas, minutos, segundos);
+    int segundos, horas, minutos, Dia;
+    segundos = minutos = horas = Dia = 0;
+    while(1)
+    {
+        printf("\r  Dia %d - %02dh%02dm%02ds", Dia, horas, minutos, segundos);
         sleep(1);
         segundos++;
         if (segundos==60)
@@ -24,7 +23,8 @@ while(1)
         if (horas==24)
         {
             horas=0;
-        }
+            Dia++;
+    }
 }
     return 0;
 }
