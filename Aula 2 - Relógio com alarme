@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <windows.h>
+#include <mmsystem.h>
+
+
+int main(){
+    int segundos, horas, minutos, Dia;
+    segundos = minutos = horas = Dia = 0;
+    int asegundos, ahoras, aminutos;
+
+    printf("Digite o horario do alarme na forma '00h 00m 00s':\n");
+    scanf("%dh %dm %ds", &ahoras, &aminutos, &asegundos);
+
+    while(1){
+        printf("\r Dia %d - %02dh%02dm%02ds", Dia, horas, minutos, segundos);
+        if ((ahoras==horas) && (aminutos==minutos) && (asegundos==segundos)){
+            printf("\nALARME");
+            break;
+        }
+
+        segundos = segundos + 1;
+        sleep(1);
+
+        if (segundos==60){
+            segundos=0;
+            minutos = minutos + 1;
+        }
+        if (minutos==60){
+            minutos=0;
+            horas = horas + 1;
+        }
+        if (horas==24){
+            horas=0;
+            Dia = Dia + 1;
+        }
+
+
+    }
+
+
+    return 0;
+}
