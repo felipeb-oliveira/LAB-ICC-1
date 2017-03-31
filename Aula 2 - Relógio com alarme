@@ -1,44 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <windows.h>
-#include <mmsystem.h>
-
+#include <unistd.h> //para o comando sleep()
 
 int main(){
-    int segundos, horas, minutos, Dia;
-    segundos = minutos = horas = Dia = 0;
-    int asegundos, ahoras, aminutos;
+    int segundos, horas, minutos, Dia;   //variáveis do relógio
+    segundos = minutos = horas = Dia = 0;   //início em 00:00:00
+    int asegundos, ahoras, aminutos;   //variáveis do alarme
 
-    printf("Digite o horario do alarme na forma '00h 00m 00s':\n");
-    scanf("%dh %dm %ds", &ahoras, &aminutos, &asegundos);
+    printf("Digite o horario do alarme na forma '00h 00m 00s':\n"); 
+    scanf("%dh %dm %ds", &ahoras, &aminutos, &asegundos); //recebendo valor por input das variáveis do alarme
 
-    while(1){
+    while(1){   //início do loop
         printf("\r Dia %d - %02dh%02dm%02ds", Dia, horas, minutos, segundos);
-        if ((ahoras==horas) && (aminutos==minutos) && (asegundos==segundos)){
-            printf("\nALARME");
-            break;
+        if ((ahoras==horas) && (aminutos==minutos) && (asegundos==segundos)){   //se os valores do alarme baterem com os instantaneos do relogio
+            printf("\nALARME");   //aviso de alarme
+            break;   //termina o programa
         }
 
-        segundos = segundos + 1;
-        sleep(1);
+        segundos = segundos + 1;   //aumentar um segundo
+        sleep(1);   //esperar um segundo
 
-        if (segundos==60){
+        if (segundos==60){   //condição para mudar de 60 segundos para um minuto a mais
             segundos=0;
             minutos = minutos + 1;
         }
-        if (minutos==60){
+        if (minutos==60){   //condição para mudar de 60 minutos para uma hora a mais
             minutos=0;
             horas = horas + 1;
         }
-        if (horas==24){
+        if (horas==24){   //condição para mudar de 24 horas para um dia a mais
             horas=0;
             Dia = Dia + 1;
-        }
-
-
+        }   //final do loop
     }
-
-
     return 0;
 }
