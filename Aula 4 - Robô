@@ -2,60 +2,81 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <unistd.h>
-char x;
+#include <time.h>
+int tempo, x, y, t;
 
 int sensor(){
-    if(kbhit()){
-        x = getch();
-        if(x == '1'){
-            return 1;
-        }
-        else if(x == '2'){
-            return 2;
-        }
-        else if(x == '3'){
-            return 3;
-        }
-    }
-    else{
-        return 4;
-    }
-}
+    int s;
+    srand(time(NULL) + rand());
+    x = (rand()%2);
+    y = (rand()%2);
 
+    if(x == 0 && y == 0){
+        return 1;
+    }
+    else if(x == 0 && y == 1){
+        return 1;
+    }
+    else if(x == 1 && y == 0){
+        return 2;
+    }
+    else if(x == 1 && y == 1){
+        return 3;
+    }
+
+
+/*    typedef struct sensors{
+        char sposition;
+        int on;
+    }SENSORS;
+
+    struct sensors lsensor;
+    struct sensors rsensor;
+
+    lsensor.sposition = "l";
+    lsensor.on = x;
+
+    rsensor.sposition = "r";
+    rsensor.on = y;
+
+
+    usleep(tempo);
+
+    return SENSORS;
+
+*/
+}
 
 
 int ia(int s){
 
-    if(s == 2){
-        return 4;
-    }
-    else if(s == 1){
-        return 1;
-    }
-    else if(s == 3){
-        return 3;
-    }
-    else if(s == 4){
-        return 2;
-    }
-}
+/*    struct motors{
+        char mposition;
+        int on;
+    };
+    struct motors lmotor = {"l", lsensor.on};
+    struct motors rmotor = {"r", rsensor.on};
 
+    return(struct motors);
+*/
+
+    return s;
+}
 
 
 void drivemotors(int m){
 
+/*    printf("\r%d -- %d", lmotor.on, rmotor.on);
+*/
+
     if(m == 1){
+        printf("\r0 -- 1");
+    }
+    else if(m == 2){
         printf("\r1 -- 0");
     }
-    else if(m == 4){
-        printf("\r0 -- 0");
-    }
-
-    else if(m == 2){
-        printf("\r1 -- 1");
-    }
     else if(m == 3){
-        printf("\r0 -- 1");
+        printf("\r1 -- 1");
     }
 }
 
@@ -64,7 +85,9 @@ void drivemotors(int m){
 int main(){
     while(1){
         drivemotors(ia(sensor()));
-        sleep(1);
+        srand(time(NULL));
+        tempo = ((200*(rand()%3)) + 300)/1000;
+        sleep(tempo);
     }
     return 0;
 }
