@@ -27,7 +27,7 @@ sensor lerSensor(void){
         x = 0;
     }
 
-    if(d2<=50){
+    if(d2 <= 50){
         y = 1;
     }else{
         y = 0;
@@ -74,6 +74,7 @@ void driveMotors(motor drive_motor){
 
 
 int main(){
+    while(1){
     sensor main_sensor;
     motor main_motor;
 
@@ -82,4 +83,11 @@ int main(){
 
     printf("\n");
     driveMotors(main_motor);
+
+    getch();
+    system("cls");
+    }
+
+
+    return 0;
 }
