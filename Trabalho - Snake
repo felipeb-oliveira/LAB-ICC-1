@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+
+#define X_TAM 60
+#define Y_TAM 30
+
+typedef struct cobra{
+    int x;
+    int y;
+    char direcao;
+}snake;
+
+char screen[100][100];
+snake cobra[200], dobra[500];
+
+void inicializa(){
+        int i, j;
+        for(i = 0; i < Y_TAM; i++){
+            for(j = 0; j < X_TAM; j++){
+                if(i == 0 || i == Y_TAM-1){
+                    screen[i][j] = '_';
+                }
+                else if(j == 0 || j == X_TAM-1){
+                    screen[i][j] = '|';
+                }
+                else{
+                    screen[i][j] = ' ';
+                }
+
+            }
+        }
+        cobra[0].x = X_TAM/2;
+        cobra[0].y = Y_TAM/2;
+        cobra[0].direcao = 'd';
+        screen[cobra[0].y][cobra[0].x] = 'O';
+}
+
+void tela(int t){
+    int i, j;
+
+    for(i = 0; i < Y_TAM; i++){
+        printf("\n");
+        for(j = 0; j < X_TAM; j++){
+            printf("%c", screen[i][j]);
+        }
+    }
+
+    printf("\n");
+    printf("Pontos: %d", t);
+}
+
+void movimento(int t){
+    int k, i, tempx, tempy, tempd;
+    k = kbhit();
+    if(k == 'w'){
+        tempx = cobra[0].x;
+        tempy = cobra[0].y;
+        tempd = cobra[0].direcao;
+
+        cobra[0].y = cobra[0].y-1;
+
+        for(i = 0; i < 199; i++){
+            cobra[i+1].y = tempy;
+            cobra[i+1].x = tempx;
+            cobra[i+1].direcao = tempd;
+
+            tempx = cobra[i+1].x;
+            tempy = cobra[i+1].y;
+            tempd = cobra[i+1].direcao;
+        }
+    }
+    else if(k == 'w'){
+
+    }
+    else if(k == 'w'){
+
+    }
+    else if(k == 'w'){
+
+    }
+
+
+
+}
+
+int main(){
+    int tam = 0;
+    inicializa();
+    tela(tam);
+
+    return 0;
+}
