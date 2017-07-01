@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <time.h>
 
 #define X_TAM 60
 #define Y_TAM 30
@@ -11,8 +12,16 @@ typedef struct cobra{
     char direcao;
 }snake;
 
+typedef struct food{
+    int x;
+    int y;
+}food;
+
 char screen[100][100];
 snake cobra[200], dobra[500];
+
+int jogo = 0;
+int k = 'd';
 
 void inicializa(){
         int i, j;
@@ -50,44 +59,121 @@ void tela(int t){
     printf("Pontos: %d", t);
 }
 
-void movimento(int t){
-    int k, i, tempx, tempy, tempd;
-    k = kbhit();
+void movimento(void){
+    int i, tempx, tempy, tempd;
+
+    if(kbhit())
+        k = kbhit();
+
     if(k == 'w'){
-        tempx = cobra[0].x;
-        tempy = cobra[0].y;
-        tempd = cobra[0].direcao;
+        if(cobra[0].direcao == 'a' || cobra[0].direcao == 'd'){
+            tempx = cobra[0].x;
+            tempy = cobra[0].y;
+            tempd = cobra[0].direcao;
 
-        cobra[0].y = cobra[0].y-1;
+            cobra[0].y = cobra[0].y-1;
 
-        for(i = 0; i < 199; i++){
-            cobra[i+1].y = tempy;
-            cobra[i+1].x = tempx;
-            cobra[i+1].direcao = tempd;
+            for(i = 0; i < 199; i++){
+                cobra[i+1].y = tempy;
+                cobra[i+1].x = tempx;
+                cobra[i+1].direcao = tempd;
 
-            tempx = cobra[i+1].x;
-            tempy = cobra[i+1].y;
-            tempd = cobra[i+1].direcao;
+                tempx = cobra[i+1].x;
+                tempy = cobra[i+1].y;
+                tempd = cobra[i+1].direcao;
+            }
         }
     }
-    else if(k == 'w'){
+    else if(k == 'a'){
+        if(cobra[0].direcao == 'w' || cobra[0].direcao == 's'){
+            tempx = cobra[0].x;
+            tempy = cobra[0].y;
+            tempd = cobra[0].direcao;
+
+            cobra[0].x = (cobra[0].x)-1;
+
+            for(i = 0; i < 199; i++){
+                cobra[i+1].y = tempy;
+                cobra[i+1].x = tempx;
+                cobra[i+1].direcao = tempd;
+
+                tempx = cobra[i+1].x;
+                tempy = cobra[i+1].y;
+                tempd = cobra[i+1].direcao;
+            }
+        }
 
     }
-    else if(k == 'w'){
+    else if(k == 's'){
+        if(cobra[0].direcao == 'a' || cobra[0].direcao == 'd'){
+            tempx = cobra[0].x;
+            tempy = cobra[0].y;
+            tempd = cobra[0].direcao;
+
+            cobra[0].y = (cobra[0].y)+1;
+
+            for(i = 0; i < 199; i++){
+                cobra[i+1].y = tempy;
+                cobra[i+1].x = tempx;
+                cobra[i+1].direcao = tempd;
+
+                tempx = cobra[i+1].x;
+                tempy = cobra[i+1].y;
+                tempd = cobra[i+1].direcao;
+            }
+        }
 
     }
-    else if(k == 'w'){
+    else if(k == 'd'){
+        if(cobra[0].direcao == 'w' || cobra[0].direcao == 's'){
+            tempx = cobra[0].x;
+            tempy = cobra[0].y;
+            tempd = cobra[0].direcao;
 
+            cobra[0].x = (cobra[0].x)+1;
+
+            for(i = 0; i < 199; i++){
+                cobra[i+1].y = tempy;
+                cobra[i+1].x = tempx;
+                cobra[i+1].direcao = tempd;
+
+                tempx = cobra[i+1].x;
+                tempy = cobra[i+1].y;
+                tempd = cobra[i+1].direcao;
+            }
+        }
     }
-
-
-
 }
 
+void comida(void){
+    srand(time(NULL));
+    food.x = rand()%((X_TAM)-2);
+    food.y = rand()%((Y_TAM)-2);
+    
+    screen[food.y][food.x] = 'F';
+}
+
+int crescer(int* t){
+    
+    
+}
+
+
+
 int main(){
-    int tam = 0;
+    int* tam = 0, temp;
     inicializa();
-    tela(tam);
+
+    while(jogo == 0){
+        movimento();
+        temp = crescer(tam);
+        
+        if(temp == 1){
+            comida();          
+        }
+        
+        tela(*tam);
+    }
 
     return 0;
 }
