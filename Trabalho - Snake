@@ -2,178 +2,215 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <time.h>
+#include <windows.h>
 
-#define X_TAM 60
-#define Y_TAM 30
 
-typedef struct cobra{
-    int x;
-    int y;
-    char direcao;
-}snake;
+#define TAMANHO_MAX_Y 30
+#define TAMANHO_MAX_X 60
 
-typedef struct food{
-    int x;
-    int y;
-}food;
+#define TAMANHO_MAX_SNAKE 100
 
-char screen[100][100];
-snake cobra[200], dobra[500];
+#define NAO 0
+#define SIM 1
 
-int jogo = 0;
-int k = 'd';
+#define CHAR_OBSTACULO 'X'
+#define CHAR_COBRA 'O'
+#define CHAR_COMIDA '.'
+#define CHAR_ESPACO ' '
 
-void inicializa(){
-        int i, j;
-        for(i = 0; i < Y_TAM; i++){
-            for(j = 0; j < X_TAM; j++){
-                if(i == 0 || i == Y_TAM-1){
-                    screen[i][j] = '_';
-                }
-                else if(j == 0 || j == X_TAM-1){
-                    screen[i][j] = '|';
-                }
-                else{
-                    screen[i][j] = ' ';
-                }
 
+char matriz[TAMANHO_MAX_Y][TAMANHO_MAX_X];    // local onde o jogo ocorrerá
+
+char tecla[4] = {'w', 's', 'd', 'a'};    // respectivamente norte, sul, leste, oeste
+
+int delta_x[4] = {0, 0, 1, -1};
+int delta_y[4] = {-1, 1, 0, 0};
+
+struct {
+    int x[TAMANHO_MAX_SNAKE];
+    int y[TAMANHO_MAX_SNAKE];
+} snake;
+
+int tamanho_cobra;
+int direcao_x, direcao_y;      // direção para onde a cabeça da cobra está indo
+
+// na struct snake, a cabeça da cobra está sempre na posição x[0] e y[0]...
+// ... e o rabo da cobra está na posicao x[tamanho_cobra-1] e y[tamanho_cobra-1]
+
+
+int qtde_comida;
+int comida;
+
+int tamanho_y, tamanho_x;      // tamanho do labirinto
+
+char tecla_pressionada;        // ASCII de uma tecla pressionada
+
+char string_termino_jogo[2][50] = {"VOCE PERDEU!!!", "VOCE GANHOU!!!"};
+int motivo_termino_jogo;
+
+
+
+void Troque_Direcao();
+void Mova_Cobra();
+int Encontrou_Obstaculo();
+int Comeu_Toda_Comida();
+void Imprima_Tela();
+void Leia_Teclado();
+void Leia_Arquivo_e_Inicialize_Variaveis();
+
+
+
+void Troque_Direcao() {
+    int i;
+
+    for (i = 0; i < 4; i++)
+        if (tecla_pressionada == tecla[i])
+            if (direcao_y + delta_y[i] != 0 || direcao_x + delta_x[i] != 0) {
+                direcao_y = delta_y[i];
+                direcao_x = delta_x[i];
             }
-        }
-        cobra[0].x = X_TAM/2;
-        cobra[0].y = Y_TAM/2;
-        cobra[0].direcao = 'd';
-        screen[cobra[0].y][cobra[0].x] = 'O';
 }
 
-void tela(int t){
+
+
+void Mova_Cobra() {
+    int i;
+    int cobra_comeu_comida;
+
+    cobra_comeu_comida = (matriz[snake.y[0]][snake.x[0]] == CHAR_COMIDA) ? SIM : NAO;
+
+    if (cobra_comeu_comida) {
+        matriz[snake.y[0]][snake.x[0]] = CHAR_ESPACO;
+        ++tamanho_cobra;
+        ++comida;
+        qtde_comida = 0;
+
+    }
+
+    for (i = tamanho_cobra-1; i > 0; i--) {
+        snake.y[i] = snake.y[i-1];
+        snake.x[i] = snake.x[i-1];
+    }
+
+    snake.y[0] += direcao_y;
+    snake.x[0] += direcao_x;
+}
+
+
+
+int Encontrou_Obstaculo() {
+    int i;
+
+    if (matriz[snake.y[0]][snake.x[0]] == CHAR_OBSTACULO)
+        return SIM;
+    for (i = tamanho_cobra-1; i > 0; i--)
+        if (snake.y[0] == snake.y[i] && snake.x[0] == snake.x[i])
+            return SIM;
+    return NAO;
+}
+
+
+
+int Comeu_Toda_Comida() {
+    if (tamanho_cobra < TAMANHO_MAX_SNAKE)
+        return NAO;
+
+    motivo_termino_jogo = 1;
+    return SIM;
+}
+
+
+
+void Imprima_Tela() {
+    int i, j, k;
+    int eh_cobra;
+
+    for (i = 0; i < tamanho_y; i++) {
+        putchar('\n');
+        for (j = 0; j < tamanho_x; j++) {
+            eh_cobra = NAO;
+            for (k = tamanho_cobra-1; k >= 0; k--)
+                if (i == snake.y[k] && j == snake.x[k])
+                    eh_cobra = SIM;
+            printf("%c", eh_cobra ? CHAR_COBRA : matriz[i][j]);
+        }
+    }
+
+    printf("\nPontuacao: %d/%d", comida, TAMANHO_MAX_SNAKE);
+}
+
+
+
+void Leia_Teclado(){
+    FILE* teclado;
+    teclado = fopen("arduino.txt", "r");
+    fscanf(teclado, "%c", &tecla_pressionada);
+    Sleep(250);
+}
+
+
+
+void Leia_Arquivo_e_Inicialize_Variaveis() {
     int i, j;
 
-    for(i = 0; i < Y_TAM; i++){
-        printf("\n");
-        for(j = 0; j < X_TAM; j++){
-            printf("%c", screen[i][j]);
+    FILE *fp;
+    fp = fopen("mapa1.txt", "r");
+
+    fscanf(fp, "%d %d\n", &tamanho_y, &tamanho_x);
+    fscanf(fp, "%d %d\n", &snake.y[0], &snake.x[0]);
+
+    direcao_x = delta_x[0];
+    direcao_y = delta_y[0];
+
+    tamanho_cobra = 1;
+    comida = 0;
+    qtde_comida = 0;
+    motivo_termino_jogo = 0;
+
+    for (i = 0; i < tamanho_y; i++) {
+        fscanf(fp, "\n");
+        for (j = 0; j < tamanho_x; j++) {
+            fscanf(fp, "%c", &matriz[i][j]);
         }
     }
 
-    printf("\n");
-    printf("Pontos: %d", t);
+    fclose(fp);
 }
 
-void movimento(void){
-    int i, tempx, tempy, tempd;
-
-    if(kbhit())
-        k = kbhit();
-
-    if(k == 'w'){
-        if(cobra[0].direcao == 'a' || cobra[0].direcao == 'd'){
-            tempx = cobra[0].x;
-            tempy = cobra[0].y;
-            tempd = cobra[0].direcao;
-
-            cobra[0].y = cobra[0].y-1;
-
-            for(i = 0; i < 199; i++){
-                cobra[i+1].y = tempy;
-                cobra[i+1].x = tempx;
-                cobra[i+1].direcao = tempd;
-
-                tempx = cobra[i+1].x;
-                tempy = cobra[i+1].y;
-                tempd = cobra[i+1].direcao;
-            }
-        }
-    }
-    else if(k == 'a'){
-        if(cobra[0].direcao == 'w' || cobra[0].direcao == 's'){
-            tempx = cobra[0].x;
-            tempy = cobra[0].y;
-            tempd = cobra[0].direcao;
-
-            cobra[0].x = (cobra[0].x)-1;
-
-            for(i = 0; i < 199; i++){
-                cobra[i+1].y = tempy;
-                cobra[i+1].x = tempx;
-                cobra[i+1].direcao = tempd;
-
-                tempx = cobra[i+1].x;
-                tempy = cobra[i+1].y;
-                tempd = cobra[i+1].direcao;
-            }
-        }
-
-    }
-    else if(k == 's'){
-        if(cobra[0].direcao == 'a' || cobra[0].direcao == 'd'){
-            tempx = cobra[0].x;
-            tempy = cobra[0].y;
-            tempd = cobra[0].direcao;
-
-            cobra[0].y = (cobra[0].y)+1;
-
-            for(i = 0; i < 199; i++){
-                cobra[i+1].y = tempy;
-                cobra[i+1].x = tempx;
-                cobra[i+1].direcao = tempd;
-
-                tempx = cobra[i+1].x;
-                tempy = cobra[i+1].y;
-                tempd = cobra[i+1].direcao;
-            }
-        }
-
-    }
-    else if(k == 'd'){
-        if(cobra[0].direcao == 'w' || cobra[0].direcao == 's'){
-            tempx = cobra[0].x;
-            tempy = cobra[0].y;
-            tempd = cobra[0].direcao;
-
-            cobra[0].x = (cobra[0].x)+1;
-
-            for(i = 0; i < 199; i++){
-                cobra[i+1].y = tempy;
-                cobra[i+1].x = tempx;
-                cobra[i+1].direcao = tempd;
-
-                tempx = cobra[i+1].x;
-                tempy = cobra[i+1].y;
-                tempd = cobra[i+1].direcao;
-            }
-        }
-    }
-}
-
-void comida(void){
+void Cria_Comida(void){
+    loop:
     srand(time(NULL));
-    food.x = rand()%((X_TAM)-2);
-    food.y = rand()%((Y_TAM)-2);
-    
-    screen[food.y][food.x] = 'F';
-}
+    int x, y;
+    x = rand()%TAMANHO_MAX_X;
+    y = rand()%TAMANHO_MAX_Y;
 
-int crescer(int* t){
-    
-    
-}
-
-
-
-int main(){
-    int* tam = 0, temp;
-    inicializa();
-
-    while(jogo == 0){
-        movimento();
-        temp = crescer(tam);
-        
-        if(temp == 1){
-            comida();          
-        }
-        
-        tela(*tam);
+    if(matriz[y][x] == CHAR_ESPACO){
+        matriz[y][x] = CHAR_COMIDA;
+        qtde_comida = 1;
+        return;
     }
+    goto loop;
+}
+
+int main() {
+    Leia_Arquivo_e_Inicialize_Variaveis();
+    Imprima_Tela();
+    float t = 0.1;
+
+    while (!Encontrou_Obstaculo()) {
+        Leia_Teclado();
+        if(qtde_comida == 0){
+            Cria_Comida();
+        }
+        Troque_Direcao();
+        Mova_Cobra();
+        system("cls");
+        Imprima_Tela();
+    }
+
+
+    printf("\n\nGAME OVER!!!");
+    getch();
 
     return 0;
 }
