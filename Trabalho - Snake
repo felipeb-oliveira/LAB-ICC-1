@@ -8,7 +8,7 @@
 #define TAMANHO_MAX_Y 30
 #define TAMANHO_MAX_X 60
 
-#define TAMANHO_MAX_SNAKE 100
+#define TAMANHO_MAX_SNAKE 50
 
 #define NAO 0
 #define SIM 1
@@ -45,7 +45,6 @@ int tamanho_y, tamanho_x;      // tamanho do labirinto
 
 char tecla_pressionada;        // ASCII de uma tecla pressionada
 
-char string_termino_jogo[2][50] = {"VOCE PERDEU!!!", "VOCE GANHOU!!!"};
 int motivo_termino_jogo;
 
 
@@ -135,17 +134,16 @@ void Imprima_Tela() {
             printf("%c", eh_cobra ? CHAR_COBRA : matriz[i][j]);
         }
     }
-
-    printf("\nPontuacao: %d/%d", comida, TAMANHO_MAX_SNAKE);
+    printf("\n");
+    printf("\rPontuacao: %d/%d", comida, TAMANHO_MAX_SNAKE);
 }
 
 
 
 void Leia_Teclado(){
-    FILE* teclado;
-    teclado = fopen("arduino.txt", "r");
-    fscanf(teclado, "%c", &tecla_pressionada);
-    Sleep(250);
+    if(kbhit()){
+        tecla_pressionada = getch();
+    }
 }
 
 
@@ -193,24 +191,47 @@ void Cria_Comida(void){
 }
 
 int main() {
+    inicio:
+    system("cls");
     Leia_Arquivo_e_Inicialize_Variaveis();
     Imprima_Tela();
-    float t = 0.1;
 
-    while (!Encontrou_Obstaculo()) {
-        Leia_Teclado();
-        if(qtde_comida == 0){
-            Cria_Comida();
-        }
-        Troque_Direcao();
-        Mova_Cobra();
-        system("cls");
-        Imprima_Tela();
-    }
-
-
-    printf("\n\nGAME OVER!!!");
     getch();
+
+    while(1){
+        while (1) {
+            Leia_Teclado();
+            if(qtde_comida == 0){
+                Cria_Comida();
+            }
+            Troque_Direcao();
+            Mova_Cobra();
+            system("cls");
+            Imprima_Tela();
+
+            if(tamanho_cobra<2){
+                Sleep(150);
+            }
+            else if(tamanho_cobra<25 && tamanho_cobra>2){
+                Sleep(15);
+            }
+            else ;
+
+            if(Encontrou_Obstaculo()){
+                printf("\nGAME OVER!\nAperte Enter para jogar de novo...");
+                getch();
+                fflush(stdin);
+                goto inicio;
+            }
+            if(tamanho_cobra == TAMANHO_MAX_SNAKE){
+                printf("\nVoce Ganhou!!\nAperte Enter para jogar de novo...");
+                getch();
+                fflush(stdin);
+                goto inicio;
+            }
+            fflush(stdin);
+        }
+    }
 
     return 0;
 }
