@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
+float max_val, min_val, x;
+int max_i, min_i, i, gen;
+
+
+typedef struct struct_individuo{
+    float ind;
+    float val;
+} t_individuo;
+
+t_individuo individuo[10];
+
+
+void comecar() {
+    srand(time(NULL));
+    for (i = 0; i < 10; i++) individuo[i].ind = rand() %20;
+}
+
+
+void gerar() {
+    for (i = 0; i < 10; i++) {
+        x = individuo[i].ind;
+
+        if (x >= 0.0 && x < 10.0) individuo[i].val = x;
+        else if (x >= 10.0 && x < 20.0) individuo[i].val = 20.0 - x;
+    }
+}
+
+
+
+void elitismo() {
+    max_i = 0;
+    max_val = individuo[max_i].val;
+
+    for (i = 1; i < 10; i++)
+        if (individuo[i].val > max_val) {
+            max_i = i;
+            max_val = individuo[i].val;
+        }
+
+    printf("\nO melhor ind e': %d\n", max_i);
+
+    for (i = 0; i < 10; i++){
+        if (i != max_i) {
+            individuo[i].ind = individuo[i].ind + individuo[max_i].ind;
+            individuo[i].ind = individuo[i].ind/2.0;
+
+            srand(time(NULL));
+
+            individuo[i].ind = individuo[i].ind + 0.1*((rand()%100)-(100/2.0));
+        }
+    }
+}
+
+void predacao() {
+    min_i = 0;
+    min_val = individuo[min_i].val;
+
+    for (i = 1; i < 10; i++)
+        if (individuo[i].val < min_val) {
+            min_i = i;
+            min_val = individuo[i].val;
+        }
+
+    printf("\nInd morto: %d", min_i);
+    srand(time(NULL));
+    individuo[min_i].val = rand()%10;
+}
+
+
+
+void mostrar_individuos() {
+    for (i = 0; i < 10; i++)
+        printf("(%d): %d\n", i, individuo[i].val);
+    printf("Geracao: %d", gen);
+}
+
+
+int main() {
+    comecar();
+    gen = 1;
+
+    while(1) {
+
+        mostrar_individuos();
+        gerar();
+        elitismo();
+        if (gen%3 == 0) {
+            predacao();
+        }
+        gen++;
+        printf("\nPara a proxima geracao, aperte Enter");
+
+        printf("\n\n\n %d", individuo[1].ind);
+        getchar();
+        system("cls");
+    }
+
+    return 0;
+}
