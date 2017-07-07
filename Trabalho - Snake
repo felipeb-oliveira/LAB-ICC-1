@@ -141,8 +141,10 @@ void Imprima_Tela() {
 
 
 void Leia_Teclado(){
-    if(kbhit()){
-        tecla_pressionada = getch();
+    FILE* arduino;
+    arduino = fopen("\dev\ttyUSB0", "r");
+    if(!eof){
+        fscanf(arduino, "%c", &tecla_pressionada);
     }
 }
 
