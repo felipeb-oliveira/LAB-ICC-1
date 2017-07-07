@@ -17,10 +17,11 @@ t_individuo individuo[10];
 
 
 void comecar() {
-    srand(time(NULL));
-    for (i = 0; i < 10; i++) individuo[i].ind = rand() %20;
-}
+    for (i = 0; i < 10; i++){
 
+        individuo[i].ind = 3*rand() %20;
+    }
+}
 
 void gerar() {
     for (i = 0; i < 10; i++) {
@@ -50,9 +51,7 @@ void elitismo() {
             individuo[i].ind = individuo[i].ind + individuo[max_i].ind;
             individuo[i].ind = individuo[i].ind/2.0;
 
-            srand(time(NULL));
-
-            individuo[i].ind = individuo[i].ind + 0.1*((rand()%100)-(100/2.0));
+            individuo[i].ind = individuo[i].ind + 0.1*((rand()%20)-(20/2.0)); //mutacao
         }
     }
 }
@@ -68,7 +67,7 @@ void predacao() {
         }
 
     printf("\nInd morto: %d", min_i);
-    srand(time(NULL));
+
     individuo[min_i].val = rand()%10;
 }
 
@@ -76,12 +75,13 @@ void predacao() {
 
 void mostrar_individuos() {
     for (i = 0; i < 10; i++)
-        printf("(%d): %lf\n", i, individuo[i].val);
+        printf("(%d): %2lf ||%2lf\n", i, individuo[i].ind, individuo[i].val);
     printf("Geracao: %d", gen);
 }
 
 
 int main() {
+    srand(time(NULL));
     comecar();
     gen = 1;
     char resp;
@@ -106,16 +106,17 @@ int main() {
 
     while(1){
         LongoPrazo:
+        mostrar_individuos();
         gerar();
+        elitismo();
         if (gen%3 == 0) {
             predacao();
         }
-        elitismo();
-        mostrar_individuos();
         gen++;
         printf("\nPara a proxima geracao, aperte Enter");
         Sleep(100);
         system("cls");
     }
+
     return 0;
 }
