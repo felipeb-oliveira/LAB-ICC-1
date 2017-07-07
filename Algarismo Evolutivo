@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <windows.h>
 
 
-float max_val, min_val, x;
+double max_val, min_val, x;
 int max_i, min_i, i, gen;
 
 
 typedef struct struct_individuo{
-    float ind;
-    float val;
+    double ind;
+    double val;
 } t_individuo;
 
 t_individuo individuo[10];
@@ -36,10 +37,10 @@ void elitismo() {
     max_i = 0;
     max_val = individuo[max_i].val;
 
-    for (i = 1; i < 10; i++)
+    for (i = 0; i < 10; i++)
         if (individuo[i].val > max_val) {
             max_i = i;
-            max_val = individuo[i].val;
+            max_val = individuo[max_i].val;
         }
 
     printf("\nO melhor ind e': %d\n", max_i);
@@ -75,7 +76,7 @@ void predacao() {
 
 void mostrar_individuos() {
     for (i = 0; i < 10; i++)
-        printf("(%d): %d\n", i, individuo[i].val);
+        printf("(%d): %lf\n", i, individuo[i].val);
     printf("Geracao: %d", gen);
 }
 
@@ -83,9 +84,14 @@ void mostrar_individuos() {
 int main() {
     comecar();
     gen = 1;
+    char resp;
+    printf("Voce deseja ver gen por gen ou a longo prazo? (g/l)\n");
+    scanf("%c", &resp);
+    if(resp == 'g') goto GenPorGen;
+    else if(resp == 'l') goto LongoPrazo;
 
     while(1) {
-
+        GenPorGen:
         mostrar_individuos();
         gerar();
         elitismo();
@@ -94,11 +100,22 @@ int main() {
         }
         gen++;
         printf("\nPara a proxima geracao, aperte Enter");
-
-        printf("\n\n\n %d", individuo[1].ind);
         getchar();
         system("cls");
     }
 
+    while(1){
+        LongoPrazo:
+        gerar();
+        if (gen%3 == 0) {
+            predacao();
+        }
+        elitismo();
+        mostrar_individuos();
+        gen++;
+        printf("\nPara a proxima geracao, aperte Enter");
+        Sleep(100);
+        system("cls");
+    }
     return 0;
 }
